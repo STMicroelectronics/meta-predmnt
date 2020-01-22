@@ -16,7 +16,7 @@ First, move to the <layers> directory of your distribution, e.g.:
   ```
 Clone the GitHub repository:
   ```Shell
-  $ git clone https://github.com/davidroid/meta-predmnt.git
+  $ git clone https://github.com/STMicroelectronics/meta-predmnt
   ```
 Enter the configuration folder, e.g.:
   ```Shell
@@ -30,7 +30,7 @@ You can now build your distribution with BitBake.
 
 
 ## License
-COPYRIGHT(c) 2019 STMicroelectronics
+COPYRIGHT(c) 2020 STMicroelectronics
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
