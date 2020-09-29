@@ -55,7 +55,6 @@ from serial import SerialException
 from serial import SerialTimeoutException
 import random
 import time
-#from datetime import datetime
 
 import wire_st_sdk.iolink.iolink_protocol as iolink_protocol
 from wire_st_sdk.iolink.iolink_master import IOLinkMaster
@@ -292,7 +291,7 @@ class PMP():
                 # Checking setup.
                 for device in devices:
                     if not device:
-                        print('IO-Link setup incomplete. Exiting...\n')
+                        print('IO-Link setup incomplete.\n\nExiting...\n')
                         sys.exit(0)
 
                 # IO-Link setup complete.
@@ -337,7 +336,7 @@ class PMP():
                     client.add_listener(MyClientListener())
                     if not client.connect():
                         print('Client \"%s\" cannot connect to core.\n' \
-                            'AWS setup incomplete. Exiting...\n' % \
+                            'AWS setup incomplete.\n\nExiting...\n' % \
                             (client.get_name()))
                         sys.exit(0)
 
@@ -538,23 +537,34 @@ class PMP():
     # Reading configuration file.
     #
     def read_configuration(self, json_configuration_file):
-        with open(json_configuration_file, 'r') as fp:
-            self.configuration = json.load(fp)
-        error = ''
-        if self.configuration["setup"]["use_cloud"]:
-            self.endpoint = \
-                json.load(open(pmp_definitions.GREENGRASS_CONFIG_PATH)
-                    )["coreThing"]["iotHost"]
-            self.root_ca_path = \
-                json.load(open(pmp_definitions.GREENGRASS_CONFIG_PATH)
-                    )["crypto"]["caPath"].split('file://')[1]
-            if not self.endpoint:
-                error += 'Missing endpoint in configuration file.\n'
-            if not self.root_ca_path:
-                error += 'Missing Root Certification Authority certificate in ' \
-                    'configuration file.\n'
-        if error is not '':
-            print('%sExiting...\n' % (error))
+        try:
+            with open(json_configuration_file, 'r') as fp:
+                self.configuration = json.load(fp)
+        except FileNotFoundError as e:
+            print('Configuration file "%s" not found.\n\nExiting...\n' % \
+                (json_configuration_file))
+            sys.exit(2)
+
+        try:
+            error = ''
+            if self.configuration["setup"]["use_cloud"]:
+                self.endpoint = \
+                    json.load(open(pmp_definitions.GREENGRASS_CONFIG_PATH)
+                        )["coreThing"]["iotHost"]
+                self.root_ca_path = \
+                    json.load(open(pmp_definitions.GREENGRASS_CONFIG_PATH)
+                        )["crypto"]["caPath"].split('file://')[1]
+                if not self.endpoint:
+                    error += 'Missing endpoint in configuration file.\n'
+                if not self.root_ca_path:
+                    error += 'Missing Root Certification Authority certificate in ' \
+                        'configuration file.\n'
+            if error is not '':
+                print('%sExiting...\n' % (error))
+                sys.exit(2)
+        except FileNotFoundError as e:
+            print('Configuration file "%s" not found.\n\nExiting...\n' % \
+                (pmp_definitions.GREENGRASS_CONFIG_PATH))
             sys.exit(2)
 
     #
@@ -603,11 +613,11 @@ class PMP():
     def get_handshake(self, device):
         data = []
         if isinstance(device, IOLinkDevice):
-            data.append("STEVAL-IPD005V1")
+            data.append("STEVAL-BFA001VxB")
             data.append(device.get_firmware())
             data.append(device.get_features())
         else:
-            data.append("STEVAL-IPD005V1")
+            data.append("STEVAL-BFA001VxB")
             data.append("Firmware Ver. 1.0.0")
             data.append(["Environmental", "Inertial_TDM", "Inertial_FDM"])
         return data
@@ -825,7 +835,7 @@ class PMP():
                 self.tdm_samples[device_name] + \
                 self.fdm_samples[device_name]
         if not end:
-            print('\nDumping samples completed. Exiting...\n')
+            print('\nDumping samples completed.\n\nExiting...\n')
             sys.exit(0)
 
     #
@@ -891,7 +901,6 @@ class PMP():
     # Get the current timestamp.
     #
     def timestamp(self):
-        #return datetime.now().time()
         return time.strftime("%H:%M:%S")
 
 
