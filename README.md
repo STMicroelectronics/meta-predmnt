@@ -29,8 +29,12 @@ Copy and paste the following line within the “bblayers.conf” file, just befo
 You can now build your distribution with BitBake.
 
 
+## Platforms
+The Predictive Maintenance Platform application can run on a Linux gateway, for example the STMicroelectronics [STM32MP157F-DK2](https://www.st.com/en/evaluation-tools/stm32mp157f-dk2.html) discovery kit.
+
+
 ## License
-COPYRIGHT(c) 2020 STMicroelectronics
+COPYRIGHT(c) 2022 STMicroelectronics
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:

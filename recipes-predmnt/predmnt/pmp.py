@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ################################################################################
-# COPYRIGHT(c) 2018 STMicroelectronics                                         #
+# COPYRIGHT(c) 2022 STMicroelectronics                                         #
 #                                                                              #
 # Redistribution and use in source and binary forms, with or without           #
 # modification, are permitted provided that the following conditions are met:  #
@@ -69,7 +69,7 @@ from edge_st_sdk.edge_client import EdgeClientListener
 from edge_st_sdk.utils.edge_st_exceptions import EdgeSTInvalidDataException
 from edge_st_sdk.utils.edge_st_exceptions import EdgeSTInvalidOperationException
 
-import pmp_definitions
+from utils import definitions
 
 
 # CONSTANTS
@@ -352,36 +352,36 @@ class PMP():
                 # Subscribing to Cloud's default topics.
                 for client in clients:
                     client.subscribe(
-                        pmp_definitions.MQTT_AWS_HEADER_TOPIC + "/"
+                        definitions.MQTT_AWS_HEADER_TOPIC + "/"
                         + client.get_name() + "/"
-                        + pmp_definitions.MQTT_AWS_GET_TOPIC,
-                        pmp_definitions.MQTT_QOS_1,
+                        + definitions.MQTT_AWS_GET_TOPIC,
+                        definitions.MQTT_QOS_1,
                         self.on_shadow_get_callback)
                     client.subscribe(
-                        pmp_definitions.MQTT_AWS_HEADER_TOPIC + "/"
+                        definitions.MQTT_AWS_HEADER_TOPIC + "/"
                         + client.get_name() + "/"
-                        + pmp_definitions.MQTT_AWS_UPDATE_TOPIC,
-                        pmp_definitions.MQTT_QOS_1,
+                        + definitions.MQTT_AWS_UPDATE_TOPIC,
+                        definitions.MQTT_QOS_1,
                         self.on_shadow_update_callback)
                     # client.subscribe(
-                    #     pmp_definitions.MQTT_AWS_HEADER_TOPIC + "/"
+                    #     definitions.MQTT_AWS_HEADER_TOPIC + "/"
                     #     + client.get_name() + "/"
-                    #     + pmp_definitions.MQTT_AWS_UPDATE_TOPIC + "/"
-                    #     #+ pmp_definitions.MQTT_AWS_ACCEPTED_TOPIC, 
-                    #     #+ pmp_definitions.MQTT_AWS_DOCUMENTS_TOPIC,
-                    #     + pmp_definitions.MQTT_AWS_DELTA_TOPIC,
-                    #     pmp_definitions.MQTT_QOS_1,
+                    #     + definitions.MQTT_AWS_UPDATE_TOPIC + "/"
+                    #     #+ definitions.MQTT_AWS_ACCEPTED_TOPIC, 
+                    #     #+ definitions.MQTT_AWS_DOCUMENTS_TOPIC,
+                    #     + definitions.MQTT_AWS_DELTA_TOPIC,
+                    #     definitions.MQTT_QOS_1,
                     #     self.on_shadow_update_delta_callback)
                 
                 # Subscribing to user defined topics.
                 for client in clients:
                     client.subscribe(
-                        pmp_definitions.MQTT_HDR_TOPIC + "/"
+                        definitions.MQTT_HDR_TOPIC + "/"
                         + client.get_name() + "/"
-                        + pmp_definitions.MQTT_PRT_TOPIC + "/"
-                        + pmp_definitions.MQTT_EVT_TOPIC + "/"
-                        + pmp_definitions.MQTT_THR_TOPIC,
-                        pmp_definitions.MQTT_QOS_1,
+                        + definitions.MQTT_PRT_TOPIC + "/"
+                        + definitions.MQTT_EVT_TOPIC + "/"
+                        + definitions.MQTT_THR_TOPIC,
+                        definitions.MQTT_QOS_1,
                         self.on_events_threshold_callback)
 
                 # Edge Computing Initialized.
@@ -549,22 +549,22 @@ class PMP():
             error = ''
             if self.configuration["setup"]["use_cloud"]:
                 self.endpoint = \
-                    json.load(open(pmp_definitions.GREENGRASS_CONFIG_PATH)
+                    json.load(open(definitions.GREENGRASS_CONFIG_PATH)
                         )["coreThing"]["iotHost"]
                 self.root_ca_path = \
-                    json.load(open(pmp_definitions.GREENGRASS_CONFIG_PATH)
+                    json.load(open(definitions.GREENGRASS_CONFIG_PATH)
                         )["crypto"]["caPath"].split('file://')[1]
                 if not self.endpoint:
                     error += 'Missing endpoint in configuration file.\n'
                 if not self.root_ca_path:
                     error += 'Missing Root Certification Authority certificate in ' \
                         'configuration file.\n'
-            if error is not '':
+            if error != '':
                 print('%sExiting...\n' % (error))
                 sys.exit(2)
         except FileNotFoundError as e:
             print('Configuration file "%s" not found.\n\nExiting...\n' % \
-                (pmp_definitions.GREENGRASS_CONFIG_PATH))
+                (definitions.GREENGRASS_CONFIG_PATH))
             sys.exit(2)
 
     #
@@ -705,12 +705,12 @@ class PMP():
             (client_name, self.timestamp(), data_json_str))
         if isinstance(client, AWSClient):
             client.publish(
-                pmp_definitions.MQTT_HDR_TOPIC + "/" \
+                definitions.MQTT_HDR_TOPIC + "/" \
                 + client_name + "/" \
-                + pmp_definitions.MQTT_SNS_TOPIC + "/" \
-                + pmp_definitions.MQTT_ENV_TOPIC,
+                + definitions.MQTT_SNS_TOPIC + "/" \
+                + definitions.MQTT_ENV_TOPIC,
                 data_json_str,
-                pmp_definitions.MQTT_QOS_0)
+                definitions.MQTT_QOS_0)
         self.dump_env(client_name, data_json_str)
 
     #
@@ -731,13 +731,13 @@ class PMP():
             (client_name, self.timestamp(), data_json_str))
         if isinstance(client, AWSClient):
             client.publish(
-                pmp_definitions.MQTT_HDR_TOPIC + "/" \
+                definitions.MQTT_HDR_TOPIC + "/" \
                 + client_name + "/" \
-                + pmp_definitions.MQTT_SNS_TOPIC + "/" \
-                + pmp_definitions.MQTT_INE_TOPIC \
-                + pmp_definitions.MQTT_TDM_TOPIC,
+                + definitions.MQTT_SNS_TOPIC + "/" \
+                + definitions.MQTT_INE_TOPIC \
+                + definitions.MQTT_TDM_TOPIC,
                 data_json_str,
-                pmp_definitions.MQTT_QOS_0)
+                definitions.MQTT_QOS_0)
         self.dump_ine_tdm(client_name, data_json_str)
 
     #
@@ -761,13 +761,13 @@ class PMP():
         data_json_str = json.dumps(data_json, sort_keys=True)
         if isinstance(client, AWSClient):
             client.publish(
-                pmp_definitions.MQTT_HDR_TOPIC + "/" \
+                definitions.MQTT_HDR_TOPIC + "/" \
                 + client_name + "/" \
-                + pmp_definitions.MQTT_SNS_TOPIC + "/" \
-                + pmp_definitions.MQTT_INE_TOPIC \
-                + pmp_definitions.MQTT_FDM_TOPIC,
+                + definitions.MQTT_SNS_TOPIC + "/" \
+                + definitions.MQTT_INE_TOPIC \
+                + definitions.MQTT_FDM_TOPIC,
                 data_json_str,
-                pmp_definitions.MQTT_QOS_0)
+                definitions.MQTT_QOS_0)
         self.dump_ine_fdm(client_name, data_json_str)
 
     #
@@ -790,7 +790,7 @@ class PMP():
     def dump_env(self, device_name, data_json_str):
         if self.env_samples[device_name]:
             data_json_str = data_json_str.replace('}', '}\r\n')
-            fn = device_name + '_' + pmp_definitions.MQTT_ENV_TOPIC + DUMP_EXT
+            fn = device_name + '_' + definitions.MQTT_ENV_TOPIC + DUMP_EXT
             fd = open(fn, 'a')
             fd.write(data_json_str)
             fd.close()
@@ -803,7 +803,7 @@ class PMP():
     def dump_ine_tdm(self, device_name, data_json_str):
         if self.tdm_samples[device_name]:
             data_json_str = data_json_str.replace('}', '}\r\n')
-            fn = device_name + '_' + pmp_definitions.MQTT_INE_TOPIC + pmp_definitions.MQTT_TDM_TOPIC + DUMP_EXT
+            fn = device_name + '_' + definitions.MQTT_INE_TOPIC + definitions.MQTT_TDM_TOPIC + DUMP_EXT
             fd = open(fn, 'a')
             fd.write(data_json_str)
             fd.close()
@@ -818,7 +818,7 @@ class PMP():
             data_json_str = data_json_str.replace(': [[', ': [\r\n[')
             data_json_str = data_json_str.replace('], [', '], \r\n[')
             data_json_str = data_json_str.replace(']]}', ']\r\n]}\r\n')
-            fn = device_name + '_' + pmp_definitions.MQTT_INE_TOPIC + pmp_definitions.MQTT_FDM_TOPIC + DUMP_EXT
+            fn = device_name + '_' + definitions.MQTT_INE_TOPIC + definitions.MQTT_FDM_TOPIC + DUMP_EXT
             fd = open(fn, 'a')
             fd.write(data_json_str)
             fd.close()
@@ -885,7 +885,7 @@ class PMP():
     # Custom callback for events.
     #
     def on_events_threshold_callback(self, client, userdata, message):
-        client = message.topic.split(pmp_definitions.MQTT_HDR_TOPIC + '/')[1]
+        client = message.topic.split(definitions.MQTT_HDR_TOPIC + '/')[1]
         client = client[:client.find('/')]
         message_json = json.loads(message.payload.decode('utf-8'))
         message_json["client"] = client

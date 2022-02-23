@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ################################################################################
-# COPYRIGHT(c) 2018 STMicroelectronics                                         #
+# COPYRIGHT(c) 2022 STMicroelectronics                                         #
 #                                                                              #
 # Redistribution and use in source and binary forms, with or without           #
 # modification, are permitted provided that the following conditions are met:  #
@@ -52,14 +52,14 @@ from gi.repository import GLib
 
 from utils import aws_utils
 from utils import gtk_utils
-import pmp_definitions
+from utils import definitions
 
 
 # CONSTANTS
 
 # URIs.
 PMP_COMMAND = 'python3 -u %s/pmp.py -c %s' % \
-    (pmp_definitions.PMP_PATH, pmp_definitions.PMP_CONFIGURATION_PATH)
+    (definitions.PMP_PATH, definitions.PMP_CONFIGURATION_PATH)
 
 # ALARMS.
 ALARM_WINDOWS_TIMEOUT_ms = 5000 
@@ -115,7 +115,7 @@ class RunPMPWindow(Gtk.Window):
             self.console_textview_scrolling)
         self.main_grid.attach(self.console_frame, 0, 1, 1, 1)
 
-        self.stop_button = Gtk.Button('Close')
+        self.stop_button = Gtk.Button.new_with_label('Close')
         self.stop_button.connect('clicked', self.on_close_clicked)
         self.main_grid.attach(self.stop_button, 0, 2, 1, 1)
 
@@ -130,7 +130,7 @@ class RunPMPWindow(Gtk.Window):
     def on_run(self, progress_bar_window):
         progress_bar_window.set_text('Restarting AWS Greengrass...')
         gtk_utils.write_to_buffer(self.console_textbuffer, 'Restarting AWS Greengrass...')
-        #aws_utils.restart_aws_greengrass()
+        aws_utils.restart_aws_greengrass()
         gtk_utils.write_to_buffer(self.console_textbuffer, 'Done.\nRunning the application...\n')
         self.pmp_process = self.execute_command_and_write_to_buffer(
             PMP_COMMAND, self.console_textbuffer)

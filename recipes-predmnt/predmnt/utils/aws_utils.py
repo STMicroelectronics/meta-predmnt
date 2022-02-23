@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ################################################################################
-# COPYRIGHT(c) 2018 STMicroelectronics                                         #
+# COPYRIGHT(c) 2022 STMicroelectronics                                         #
 #                                                                              #
 # Redistribution and use in source and binary forms, with or without           #
 # modification, are permitted provided that the following conditions are met:  #
@@ -34,7 +34,7 @@
 
 # DESCRIPTION
 #
-# This file provides useful functions.
+# This file provides useful functions related to the Amazon AWS services.
 
 
 # IMPORT
@@ -45,17 +45,17 @@ import subprocess
 import json
 
 from utils import gtk_utils
-import pmp_definitions
+from utils import definitions
 
 
 # CONSTANTS
 
 # AWS Greengrass.
-GREENGRASS_GROUP_PATH = pmp_definitions.GREENGRASS_PATH \
+GREENGRASS_GROUP_PATH = definitions.GREENGRASS_PATH \
     + '/ggc/deployment/group/group.json'
-RESTART_GREENGRASS_COMMAND = pmp_definitions.GREENGRASS_PATH \
+RESTART_GREENGRASS_COMMAND = definitions.GREENGRASS_PATH \
     + '/ggc/core/greengrassd restart'
-RESTART_GREENGRASS_OUTPUT_PATH = pmp_definitions.HOME_PATH \
+RESTART_GREENGRASS_OUTPUT_PATH = definitions.HOME_PATH \
     + '/greengrass_output'
 RESTART_GREENGRASS_OK = 'Greengrass successfully started'
 
@@ -74,7 +74,7 @@ def configure_edge_gateway_aws(edge_gateway_path, textbuffer=None):
             'cp %s . && ' \
             'unzip -o %s && ' \
             'rm -rf %s 2>&1' % \
-            (pmp_definitions.GREENGRASS_PATH, edge_gateway_path,
+            (definitions.GREENGRASS_PATH, edge_gateway_path,
                 edge_gateway_basename, edge_gateway_basename)
         output = subprocess.check_output(command,
             stderr=subprocess.STDOUT, shell=True).decode('utf-8')
@@ -82,14 +82,14 @@ def configure_edge_gateway_aws(edge_gateway_path, textbuffer=None):
             gtk_utils.write_to_buffer(textbuffer, output)
     except subprocess.CalledProcessError as e:
         pass
-    endpoint = json.load(open(pmp_definitions.GREENGRASS_CONFIG_PATH))["coreThing"]["iotHost"]
+    endpoint = json.load(open(definitions.GREENGRASS_CONFIG_PATH))["coreThing"]["iotHost"]
 
 #
 # Configure devices for AWS.
 #
 def configure_devices_aws(devices_dict, textbuffer=None):
     try:
-        with open(pmp_definitions.PMP_CONFIGURATION_PATH, 'r') as fp:
+        with open(definitions.PMP_CONFIGURATION_PATH, 'r') as fp:
             pmp_configuration_json = json.load(fp)
         device_certificates_path = \
             pmp_configuration_json["setup"]["device_certificates_path"]
@@ -103,7 +103,7 @@ def configure_devices_aws(devices_dict, textbuffer=None):
             gtk_utils.write_to_buffer(textbuffer, output)
     except subprocess.CalledProcessError as e:
         pass
-    root_ca_path = json.load(open(pmp_definitions.GREENGRASS_CONFIG_PATH))["coreThing"]["caPath"]
+    root_ca_path = json.load(open(definitions.GREENGRASS_CONFIG_PATH))["coreThing"]["caPath"]
     for position in devices_dict:
         device_path = devices_dict[position]
         device_basename = os.path.basename(device_path)
@@ -121,13 +121,13 @@ def configure_devices_aws(devices_dict, textbuffer=None):
                 gtk_utils.write_to_buffer(textbuffer, output)
         except subprocess.CalledProcessError as e:
             pass
-        with open(pmp_definitions.PMP_CONFIGURATION_PATH, 'r') as fp:
+        with open(definitions.PMP_CONFIGURATION_PATH, 'r') as fp:
             pmp_configuration_json = json.load(fp)
         device_dict = {}
         device_dict["name"] = device_basename[:device_basename.find('.')]
         device_dict["position"] = int(position.split(' ')[1])
         pmp_configuration_json["setup"]["devices"].append(device_dict)
-        with open(pmp_definitions.PMP_CONFIGURATION_PATH, 'w') as fp:
+        with open(definitions.PMP_CONFIGURATION_PATH, 'w') as fp:
             json.dump(pmp_configuration_json, fp)
 
 #

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ################################################################################
-# COPYRIGHT(c) 2018 STMicroelectronics                                         #
+# COPYRIGHT(c) 2022 STMicroelectronics                                         #
 #                                                                              #
 # Redistribution and use in source and binary forms, with or without           #
 # modification, are permitted provided that the following conditions are met:  #
@@ -46,6 +46,11 @@ PMP_CONFIGURATION_PATH = PMP_PATH + '/pmp.json'
 GREENGRASS_PATH = '/greengrass'
 GREENGRASS_CONFIG_PATH = GREENGRASS_PATH + '/config/config.json'
 DEVICE_CERTIFICATES_PATH = PMP_PATH + '/devices_pmp_aws'
+GATEWAY_RULES_PATH = '/etc/sysctl.d/98-gateway.conf'
+
+# Python packages to install through "pip" tool.
+PYTHON_PIP_UPGRADE = 'pip3 install --upgrade pip'
+PYTHON_PACKAGES_TO_INSTALL = 'awsiotpythonsdk wire-st-sdk edge-st-sdk'
 
 # Cloud's default MQTT Topics.
 MQTT_AWS_HEADER_TOPIC = "$aws/things"

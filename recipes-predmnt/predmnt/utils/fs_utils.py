@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ################################################################################
-# COPYRIGHT(c) 2018 STMicroelectronics                                         #
+# COPYRIGHT(c) 2022 STMicroelectronics                                         #
 #                                                                              #
 # Redistribution and use in source and binary forms, with or without           #
 # modification, are permitted provided that the following conditions are met:  #
@@ -34,7 +34,7 @@
 
 # DESCRIPTION
 #
-# This file provides useful functions.
+# This file provides useful functions related to the filesystem.
 
 
 # IMPORT
@@ -44,7 +44,7 @@ import os
 import subprocess
 import json
 
-import pmp_definitions
+from utils import definitions
 
 
 # CONSTANTS
@@ -54,8 +54,8 @@ MAXIMUM_MOUNT_TRIALS = 10
 MOUNT_POINT_PATH = '/media/usb'
 
 # WiFi.
-CONNECT_WIFI_PATH = pmp_definitions.HOME_PATH + '/connect_wifi.sh'
-DISCONNECT_WIFI_PATH = pmp_definitions.HOME_PATH + '/disconnect_wifi.sh'
+CONNECT_WIFI_PATH = definitions.HOME_PATH + '/connect_wifi.sh'
+DISCONNECT_WIFI_PATH = definitions.HOME_PATH + '/disconnect_wifi.sh'
 CONFIGURATION_WIFI_PATH = '/etc/wpa_supplicant.conf'
 CONNECT_WIFI = \
 """#!/bin/sh

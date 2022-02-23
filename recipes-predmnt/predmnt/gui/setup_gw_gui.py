@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ################################################################################
-# COPYRIGHT(c) 2019 STMicroelectronics                                         #
+# COPYRIGHT(c) 2022 STMicroelectronics                                         #
 #                                                                              #
 # Redistribution and use in source and binary forms, with or without           #
 # modification, are permitted provided that the following conditions are met:  #
@@ -52,16 +52,10 @@ from gi.repository import Gtk
 from utils import aws_utils
 from utils import fs_utils
 from utils import gtk_utils
+from utils import definitions
 
 
 # CONSTANTS
-
-# URIs.
-GATEWAY_RULES_PATH = '/etc/sysctl.d/98-gateway.conf'
-
-# Python packages to install through pip tool.
-PYTHON_PIP_UPGRADE = 'pip3 install --upgrade pip'
-PYTHON_PACKAGES_TO_INSTALL = 'awsiotpythonsdk wire-st-sdk edge-st-sdk'
 
 # GTK.
 TIMEOUT_ms = 1000
@@ -124,7 +118,7 @@ class SetupGwWindow(Gtk.Window):
         self.connection_password_entry.set_visibility(False)
         self.connection_password_entry.set_invisible_char('*')
         self.connection_grid.attach(self.connection_password_entry, 2, 1, 1, 1)
-        self.connect_button = Gtk.Button('Connect')
+        self.connect_button = Gtk.Button.new_with_label('Connect')
         self.connect_button.connect('clicked', self.on_connect_clicked)
         self.connection_grid.attach(self.connect_button, 0, 2, 3, 1)
         self.main_grid.attach(self.connection_frame, 0, 0, 1, 1)
@@ -155,10 +149,10 @@ class SetupGwWindow(Gtk.Window):
             self.console_textview_scrolling)
         self.main_grid.attach(self.console_frame, 0, 1, 1, 1)
 
-        self.update_button = Gtk.Button('Update')
+        self.update_button = Gtk.Button.new_with_label('Update')
         self.update_button.connect('clicked', self.on_update_clicked)
 
-        self.close_button = Gtk.Button('Close')
+        self.close_button = Gtk.Button.new_with_label('Close')
         self.close_button.connect('clicked', self.on_close_clicked)
 
         self.hbox = Gtk.Box(
@@ -270,18 +264,18 @@ class SetupGwWindow(Gtk.Window):
             self.console_textbuffer,
             'Enabling hardlink and softlink protection at operating system ' \
             'start-up...\n')
-        fd = open(GATEWAY_RULES_PATH, 'w')
+        fd = open(definitions.GATEWAY_RULES_PATH, 'w')
         fd.write('fs.protected_hardlinks = 1\nfs.protected_symlinks = 1')
         fd.close()
 
         # Installing Python packages.
         gtk_utils.write_to_buffer(
             self.console_textbuffer, 'Installing Python packages...\n')
-        command = '%s 2>&1' % (PYTHON_PIP_UPGRADE)
+        command = '%s 2>&1' % (definitions.PYTHON_PIP_UPGRADE)
         gtk_utils.execute_command_and_write_to_buffer(
             command, self.console_textbuffer)
         if self.check_setup(None):
-            command = 'pip3 install %s 2>&1' % (PYTHON_PACKAGES_TO_INSTALL)
+            command = 'pip3 install %s 2>&1' % (definitions.PYTHON_PACKAGES_TO_INSTALL)
             gtk_utils.execute_command_and_write_to_buffer(
                 command, self.console_textbuffer)
             #GLib.timeout_add(TIMEOUT_ms, self.check_setup, None)
@@ -311,7 +305,7 @@ class SetupGwWindow(Gtk.Window):
         installed_packages = set(package.key for package in pkg_resources.working_set) 
         #installed_packages = get_installed_distributions(local_only=False)
         #installed_packages = set(package.project_name for package in installed_packages)
-        if set(PYTHON_PACKAGES_TO_INSTALL.split(' ')).issubset(installed_packages):
+        if set(definitions.PYTHON_PACKAGES_TO_INSTALL.split(' ')).issubset(installed_packages):
             return False
         return True
 

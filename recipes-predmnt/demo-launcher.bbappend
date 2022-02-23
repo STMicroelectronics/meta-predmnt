@@ -1,4 +1,4 @@
-# Copyright (C) 2019, STMicroelectronics - All Rights Reserved
+# Copyright (C) 2022, STMicroelectronics - All Rights Reserved
 
 SUMMARY = "Recipe to avoid demo_launcher application to start"
 

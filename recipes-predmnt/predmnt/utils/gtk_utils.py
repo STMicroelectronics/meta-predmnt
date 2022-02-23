@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ################################################################################
-# COPYRIGHT(c) 2018 STMicroelectronics                                         #
+# COPYRIGHT(c) 2022 STMicroelectronics                                         #
 #                                                                              #
 # Redistribution and use in source and binary forms, with or without           #
 # modification, are permitted provided that the following conditions are met:  #
@@ -34,13 +34,12 @@
 
 # DESCRIPTION
 #
-# This file provides useful functions.
+# This file provides useful functions related to the GTK framework.
 
 
 # IMPORT
 
 from __future__ import print_function
-import os
 import subprocess
 import threading
 import gi
@@ -129,7 +128,6 @@ class ProgressBarWindow(Gtk.Window):
     #
     def __init__(self, text=''):
         Gtk.Window.__init__(self)
-        self.screen_width = self.get_screen().get_width()
         self.screen_height = self.get_screen().get_height()
         self.set_default_size(self.screen_height / 2, 0)
         self.set_border_width(DEFAULT_SPACE)
@@ -227,10 +225,15 @@ class MessageWindow(Gtk.Window):
     #
     # Constructor.
     #
-    def __init__(self, title, message):
+    def __init__(self, window_title, frame_title, message, maximize=False):
         super(MessageWindow, self).__init__()
-        self.set_title(title)
-        self.maximize()
+        self.set_title(window_title)
+        if maximize:
+            self.maximize()
+        else:
+            self.screen_width = self.get_screen().get_width()
+            self.screen_height = self.get_screen().get_height()
+            self.set_default_size(self.screen_width >> 1, self.screen_height >> 1)
         self.set_border_width(DEFAULT_SPACE)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.connect('destroy', Gtk.Widget.destroy)
@@ -244,7 +247,7 @@ class MessageWindow(Gtk.Window):
         self.add(self.main_grid)
 
         self.message_frame = Gtk.Frame()
-        self.message_frame.set_label('Console')
+        self.message_frame.set_label(frame_title)
         self.message_grid = Gtk.Grid()
         self.message_grid.set_row_spacing(DEFAULT_SPACE)
         self.message_grid.set_column_spacing(DEFAULT_SPACE)
@@ -267,7 +270,7 @@ class MessageWindow(Gtk.Window):
             self.message_textview_scrolling)
         self.main_grid.attach(self.message_frame, 0, 0, 1, 1)
 
-        self.close_button = Gtk.Button('Close')
+        self.close_button = Gtk.Button.new_with_label('Close')
         self.close_button.connect('clicked', self.on_close_clicked)
         self.main_grid.attach(self.close_button, 0, 1, 1, 1)
 

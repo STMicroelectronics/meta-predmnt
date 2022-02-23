@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ################################################################################
-# COPYRIGHT(c) 2019 STMicroelectronics                                         #
+# COPYRIGHT(c) 2022 STMicroelectronics                                         #
 #                                                                              #
 # Redistribution and use in source and binary forms, with or without           #
 # modification, are permitted provided that the following conditions are met:  #
@@ -47,7 +47,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 from utils import gtk_utils
-import pmp_definitions
+from utils import definitions
 
 
 # CLASSES
@@ -64,8 +64,8 @@ class MainPMPWindow(Gtk.Window):
         super(MainPMPWindow, self).__init__()
         self.set_title('PREDICTIVE MAINTENANCE PLATFORM')
         self.maximize()
-        self.screen_width = self.get_screen().get_width()
-        self.screen_height = self.get_screen().get_height()
+        # self.screen_width = self.get_screen().get_width()
+        # self.screen_height = self.get_screen().get_height()
         # self.set_default_size(self.screen_width, self.screen_height)
         self.set_border_width(gtk_utils.DEFAULT_SPACE)
         self.set_position(Gtk.WindowPosition.CENTER)
@@ -97,7 +97,7 @@ class MainPMPWindow(Gtk.Window):
             self.on_setup_gw_clicked)
         image = Gtk.Image()
         image.set_from_file(
-            pmp_definitions.PMP_PATH + '/media/setup_gateway_blue.png')
+            definitions.PMP_PATH + '/media/setup_gateway_blue.png')
         self.setup_gw_button.add(image)
         self.setup_gw_button.set_size_request(230, 230)
 
@@ -108,7 +108,7 @@ class MainPMPWindow(Gtk.Window):
             self.on_setup_pmp_clicked)
         image = Gtk.Image()
         image.set_from_file(
-            pmp_definitions.PMP_PATH + '/media/setup_application_lightblue.png')
+            definitions.PMP_PATH + '/media/setup_application_lightblue.png')
         self.setup_pmp_button.add(image)
         self.setup_pmp_button.set_size_request(230, 230)
 
@@ -119,11 +119,11 @@ class MainPMPWindow(Gtk.Window):
             self.on_pmp_clicked)
         image = Gtk.Image()
         image.set_from_file(
-            pmp_definitions.PMP_PATH + '/media/run_application_magenta.png')
+            definitions.PMP_PATH + '/media/run_application_magenta.png')
         self.start_pmp_button.add(image)
         self.start_pmp_button.set_size_request(230, 230)
 
-        #self.close_button = Gtk.Button('Close')
+        #self.close_button = Gtk.Button.new_with_label('Close')
         #self.close_button.connect('clicked', self.on_close_clicked)
 
         self.hbox_center.add(self.setup_gw_button)

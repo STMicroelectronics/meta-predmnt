@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ################################################################################
-# COPYRIGHT(c) 2019 STMicroelectronics                                         #
+# COPYRIGHT(c) 2022 STMicroelectronics                                         #
 #                                                                              #
 # Redistribution and use in source and binary forms, with or without           #
 # modification, are permitted provided that the following conditions are met:  #
@@ -51,7 +51,7 @@ from gi.repository import Gtk
 from utils import aws_utils
 from utils import fs_utils
 from utils import gtk_utils
-import pmp_definitions
+from utils import definitions
 
 
 # CONSTANTS
@@ -136,7 +136,7 @@ class SetupPMPWindow(Gtk.Window):
         self.edge_gateway_textview_scrolling.add(self.edge_gateway_textview)
         self.edge_gateway_textview_scrolling.set_vexpand(True)
         self.edge_gateway_textview_scrolling.set_hexpand(True)
-        self.edge_gateway_add_button = Gtk.Button('Add')
+        self.edge_gateway_add_button = Gtk.Button.new_with_label('Add')
         self.edge_gateway_add_button.connect('clicked',
             self.on_add_edge_gateway_clicked)
         self.edge_gateway_grid.attach(self.edge_gateway_add_button, 0, 0, 1, 1)
@@ -162,7 +162,7 @@ class SetupPMPWindow(Gtk.Window):
         self.devices_textview_scrolling.add(self.devices_textview)
         self.devices_textview_scrolling.set_vexpand(True)
         self.devices_textview_scrolling.set_hexpand(True)
-        self.device_add_button = Gtk.Button('Add')
+        self.device_add_button = Gtk.Button.new_with_label('Add')
         self.device_add_button.connect('clicked',
             self.on_add_devices_clicked)
         self.devices_grid.attach(self.device_add_button, 0, 0, 1, 1)
@@ -195,13 +195,13 @@ class SetupPMPWindow(Gtk.Window):
             self.console_textview_scrolling)
         self.main_grid.attach(self.console_frame, 0, 2, 2, 1)
 
-        self.configure_button = Gtk.Button('Install Credentials')
+        self.configure_button = Gtk.Button.new_with_label('Install Credentials')
         self.configure_button.connect('clicked', self.on_configure_clicked)
 
-        self.show_button = Gtk.Button('Show Configuration')
+        self.show_button = Gtk.Button.new_with_label('Show Configuration')
         self.show_button.connect('clicked', self.on_show_clicked)
 
-        self.close_button = Gtk.Button('Close')
+        self.close_button = Gtk.Button.new_with_label('Close')
         self.close_button.connect('clicked', self.on_close_clicked)
 
         self.hbox = Gtk.Box(
@@ -227,7 +227,7 @@ class SetupPMPWindow(Gtk.Window):
         self.edge_gateway_add_button.set_sensitive(True)
         self.device_add_button.set_sensitive(True)
         self.show_button.set_sensitive(os.path.exists(
-            pmp_definitions.PMP_CONFIGURATION_PATH))
+            definitions.PMP_CONFIGURATION_PATH))
         status = True if self.edge_gateway and self.devices_dict else False
         self.configure_button.set_sensitive(status)
 
@@ -237,12 +237,18 @@ class SetupPMPWindow(Gtk.Window):
     def on_add_edge_gateway_clicked(self, widget):
         fs_utils.mount_usb_key()
         dialog = Gtk.FileChooserDialog(
-            'Select Edge Credentials zip file',
-            self,
-            Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-             Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
-        dialog.maximize()
+            title='Select Edge Credentials zip file',
+            parent=self,
+            action=Gtk.FileChooserAction.OPEN)
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL,
+            Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN,
+            Gtk.ResponseType.OK)
+        #dialog.maximize()
+        self.screen_width = self.get_screen().get_width()
+        self.screen_height = self.get_screen().get_height()
+        self.set_default_size(self.screen_width, self.screen_height)
         credentials_filter = Gtk.FileFilter()
         credentials_filter.set_name("Credential Zip files")
         credentials_filter.add_pattern("*.zip")
@@ -262,12 +268,18 @@ class SetupPMPWindow(Gtk.Window):
     def on_add_devices_clicked(self, widget):
         fs_utils.mount_usb_key()
         dialog = Gtk.FileChooserDialog(
-            'Select Device Credentials zip file',
-            self,
-            Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-             Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
-        dialog.maximize()
+            title='Select Device Credentials zip file',
+            parent=self,
+            action=Gtk.FileChooserAction.OPEN)
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL,
+            Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN,
+            Gtk.ResponseType.OK)
+        #dialog.maximize()
+        self.screen_width = self.get_screen().get_width()
+        self.screen_height = self.get_screen().get_height()
+        self.set_default_size(self.screen_width, self.screen_height)
         credentials_filter = Gtk.FileFilter()
         credentials_filter.set_name("Credential Zip files")
         credentials_filter.add_pattern("*.zip")
@@ -310,8 +322,8 @@ class SetupPMPWindow(Gtk.Window):
         gtk_utils.write_to_buffer(self.console_textbuffer,
             'Installing credentials...\n')
         fs_utils.create_file_from_json(
-            pmp_definitions.PMP_CONFIGURATION_PATH,
-            pmp_definitions.DEFAULT_PMP_CONFIGURATION_JSON)
+            definitions.PMP_CONFIGURATION_PATH,
+            definitions.DEFAULT_PMP_CONFIGURATION_JSON)
         aws_utils.configure_edge_gateway_aws(
             self.edge_gateway, self.console_textbuffer)
         aws_utils.configure_devices_aws(
@@ -336,11 +348,13 @@ class SetupPMPWindow(Gtk.Window):
     # Callback for "Show" button clicked.
     #
     def on_show_clicked(self, widget):
-        with open(pmp_definitions.PMP_CONFIGURATION_PATH, 'r') as fp:
+        with open(definitions.PMP_CONFIGURATION_PATH, 'r') as fp:
             configuration_json = json.load(fp)
         window = gtk_utils.MessageWindow(
             "JSON CONFIGURATION FILE",
-            json.dumps(configuration_json, indent=4, sort_keys=True))
+            "Configuration",
+            json.dumps(configuration_json, indent=4, sort_keys=True),
+            True)
         window.show_all()
 
     #
