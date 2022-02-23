@@ -218,6 +218,54 @@ class StringComboBox(Gtk.Box):
 
 
 #
+# Class to show an alarm button in a window.
+#
+class AlarmWindow(Gtk.Window):
+
+    #
+    # Constructor.
+    #
+    def __init__(self, title, image_path, sound_path=None, timeout_ms=None):
+        super(AlarmWindow, self).__init__()
+        self.set_title(title)
+        self.set_border_width(DEFAULT_SPACE)
+        self.set_position(Gtk.WindowPosition.CENTER)
+        self.connect('destroy', Gtk.Widget.destroy)
+
+        self.alarm_button = Gtk.Button()
+        self.alarm_button.props.relief = Gtk.ReliefStyle.NONE
+        self.alarm_button.connect("enter-notify-event", self.on_leave)
+        image = Gtk.Image()
+        image.set_from_file(image_path)
+        self.alarm_button.add(image)
+        if sound_path:
+            command = 'aplay %s 2>&1' % (sound_path)
+            process = subprocess.Popen(
+                command, shell = True, stdout = subprocess.PIPE)
+        self.alarm_button.connect('clicked', self.on_close_clicked)
+        self.add(self.alarm_button)
+
+        if timeout_ms:
+            self.progress_callback_id = GLib.timeout_add(
+                timeout_ms,
+                self.destroy)
+        
+        self.show_all()
+
+    #
+    # Callback for "Close" button clicked.
+    #
+    def on_close_clicked(self, widget):
+        self.destroy()
+
+    #
+    # Callback for "enter-notify-event" event.
+    #
+    def on_leave(self, btn, event):
+        return True
+
+
+#
 # Class to show a message in a window.
 #
 class MessageWindow(Gtk.Window):

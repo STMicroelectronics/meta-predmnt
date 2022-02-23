@@ -125,6 +125,17 @@ class RunPMPWindow(Gtk.Window):
         self.pmp_process = None
 
     #
+    # Callback for alarm.
+    #
+    def on_alarm_triggered(self, title, severity):
+        window = gtk_utils.AlarmWindow(
+            title,
+            '%s/media/severity_%d.png' % (definitions.PMP_PATH, severity),
+            '%s/media/severity_%d.wav' % (definitions.PMP_PATH, severity),
+            ALARM_WINDOWS_TIMEOUT_ms)
+        window.show_all()
+
+    #
     # Prepare callback.
     #
     def on_run(self, progress_bar_window):
@@ -171,7 +182,19 @@ class RunPMPWindow(Gtk.Window):
     def write_to_buffer_callback(self, fd, condition, buffer):
         if condition == GLib.IO_IN:
             line = fd.readline().decode("utf-8")
-            buffer.insert_at_cursor(line)
+            # Handling alarms on console.
+            if "severity" in line:
+                client = re.split('\[|\]', line)[1]
+                severity = int(line.split('\"')[1])
+                self.on_alarm_triggered(client, severity)
+                line = re.sub(r'Event.*:', '%s:' % definitions.EVENTS[severity].upper(), line)
+                line = ('<span color="{:s}">%s</span>' % (line))
+                buffer.insert_markup(
+                    buffer.get_end_iter(),
+                    line.format(definitions.COLORS[severity]),
+                    -1)
+            else:
+                buffer.insert_at_cursor(line)
             while Gtk.events_pending():
                 Gtk.main_iteration()
             return True

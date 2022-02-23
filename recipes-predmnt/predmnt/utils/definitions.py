@@ -78,6 +78,10 @@ MQTT_GUI_TOPIC = "gui"
 MQTT_QOS_0 = 0
 MQTT_QOS_1 = 1
 
+# Events.
+EVENTS = ["normal", "warning", "alert", "critical"]
+COLORS = ["#00FF00", "#FFCC00", "#FF0000", "#0000FF"]
+
 # Default PMP configuration.
 DEFAULT_PMP_CONFIGURATION_JSON = \
 {
